@@ -52,10 +52,12 @@ public abstract class PutProtocol_v1: IRequest
     void handle ( RequestOnConn connection, Object resources,
         Const!(void)[] init_payload )
     {
+        auto ed = connection.event_dispatcher;
+
         cstring channel;
         time_t timestamp;
         Const!(char)[] value;
-        this.ed.message_parser.parseBody(init_payload, channel, timestamp, value);
+        ed.message_parser.parseBody(init_payload, channel, timestamp, value);
 
         // Store the extracted data in StorageEngine
         RequestStatusCode response;
@@ -66,7 +68,7 @@ public abstract class PutProtocol_v1: IRequest
             response = RequestStatusCode.Error;
 
         // Send the response code.
-        this.ed.send(
+        ed.send(
             ( RequestOnConnBase.EventDispatcher.Payload payload )
             {
                 payload.addCopy(response);

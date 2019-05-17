@@ -42,6 +42,7 @@ public abstract class GetRangeProtocol_v2: IRequest
     import swarm.util.RecordBatcher;
     import swarm.neo.node.RequestOnConn;
     import dlsproto.common.GetRange;
+    import dlsproto.node.neo.request.core.IRequestResources;
     public import dlsproto.client.request.GetRange: Filter;
 
     import core.stdc.time;
@@ -147,6 +148,9 @@ public abstract class GetRangeProtocol_v2: IRequest
     void handle ( RequestOnConn connection, Object resources,
         Const!(void)[] init_payload )
     {
+        this.ed = connection.event_dispatcher;
+        auto rq_resources = cast(IRequestResources)resources;
+
         cstring channel_name;
         cstring filter_string;
         time_t low, high;
@@ -190,11 +194,11 @@ public abstract class GetRangeProtocol_v2: IRequest
                 }
             );
 
-            this.value_buffer = this.resources.getVoidBuffer();
-            this.batch_buffer = this.resources.getVoidBuffer();
-            this.compressed_batch = this.resources.getVoidBuffer();
-            this.saved_exception = this.resources.getException();
-            this.lzo = this.resources.getLzo();
+            this.value_buffer = rq_resources.getVoidBuffer();
+            this.batch_buffer = rq_resources.getVoidBuffer();
+            this.compressed_batch = rq_resources.getVoidBuffer();
+            this.saved_exception = rq_resources.getException();
+            this.lzo = rq_resources.getLzo();
 
             try
             {
